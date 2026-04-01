@@ -2,20 +2,26 @@ name: Update Dollar Price
 
 on:
   schedule:
-    - cron: '0 * * * *'
-  workflow_dispatch:
+    - cron: '*/60 * * * *'  # Every hour
+  workflow_dispatch:  # Allow manual trigger
 
 jobs:
   update-price:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
+      
       - name: Set up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: '3.9'
+      
       - name: Install dependencies
         run: |
+          python -m pip install --upgrade pip
           pip install requests
+      
       - name: Run update script
         run: python update_price.py
+        env:
+          FIREBASE_API_KEY: ${{ secrets.FIREBASE_API_KEY }}
